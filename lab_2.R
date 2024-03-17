@@ -157,4 +157,11 @@ pie(table(cut(truskawki[,2], breaks=4)))
 #wszystkie wykresy przedstaw w jednym oknie;
 par(mfrow=c(1,2))
 library(arm)
-discrete.histogram(truskawki[,1], breaks=4, freq=F)
+br=seq(0,160,by=20)
+for(i in 1:2){
+  data=na.omit(truskawki[,i])
+  hist(data, breaks=br, freq=F, xlim=c(20,150), ylim=c(0, 0.04))
+}
+
+#f) porównaj dane z kolejnych lat za pomocą wykresów pudełkowych.
+boxplot(truskawki)
