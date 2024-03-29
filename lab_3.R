@@ -249,5 +249,7 @@ mu = 0.5
 sigma = 0.2
 n = 100
 
-#P(X>47)
-pnorm(47, mu, sigma/sqrt(n))
+#T=X1+...+X100 T ma rozkład N(n*mu, sig*sqrt(n))
+#P(T>=47)
+1 - pnorm(47, n*mu, sigma*sqrt(n))
+
