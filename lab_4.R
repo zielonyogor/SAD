@@ -86,7 +86,7 @@ ufnosc_wariancja = function(n, sd, alpha){
   else{
     L=Lz #normalny
     P=Pz
-    print(paste(L, " ; ", P.))
+    print(paste(L, " ; ", P))
   }
 }
 
@@ -204,3 +204,185 @@ C=sigma.test(wodorosty, conf.level = 0.9)$conf.int
 print(paste("wariancja: (", C[1], ":", C[2], ")"))
 #z ufnością 90% przedział (0.388 : 1.235) pokrywa wariancję populacyjną zawartości 
 #białka w 50-kilogramowych porcji wodorostów
+
+
+#5
+
+#Załóżmy, że jeśli sygnał o natężeniu μ pochodzi z lokalizacji A, to natężenie 
+#zarejestrowane w lokalizacji B ma rozkład normalny ze średnią μ i odchyleniem 
+#standardowym 3. Oznacza to, że z powodu „szumu” zarejestrowane
+#natężenie różni się od rzeczywistego natężenia sygnału o wielkość będącą zmienną losową 
+#o rozkładzie normalnym ze średnią 0 i odchyleniem standardowym 3. Aby zmniejszyć błąd, 
+#ten sam sygnał jest niezależnie rejestrowany 10 razy. Jeżeli kolejne zarejestrowane 
+#wartości to: 17, 21, 20, 18, 19, 22, 20, 21, 16, 19, oszacuj punktowo rzeczywiste 
+#natężenie sygnału μ, a następnie oceń je przedziałowo z ufnością 95%. Zinterpretuj wynik.
+
+sygnal = na.omit(dane$sygnal)
+
+#oszacowanie punktowe rzeczywistego sygnału mu
+mean(sygnal)
+
+#ocena przedziałowa z ufnością 95%
+C = z.test(sygnal, sigma.x = 3, conf.level = 0.95)$conf.int
+print(paste("średnia: (", C[1], ":", C[2], ")"))
+#z ufnościa 95% przedział ( 17.44 : 21.16 ) pokrywa rzeczywiste natężenie sygnału mu
+#z lokalizacji A
+
+
+#6
+
+#Aby określić średni czas trwania połączenia telefonicznego realizowanego w godzinach 
+#południowych, operator telefoniczny wybrał losowo próbę 1200 takich połączeń. 
+#Obliczona średnia zmierzonego czasu trwania połączeń wynosi 4,7 minuty, a ich 
+#odchylenie standardowe to 2,2 minuty. Oszacuj z 95% ufnością średnią długość trwania
+#wszystkich takich połączeń oraz ich odchylenie standardowe. Zinterpretuj wyniki. 
+
+#duża próba
+C = zsum.test(4.7, 2.2, 1200, conf.level = 0.95)$conf.int
+print(paste("średnia: (", C[1], ":", C[2], ")"))
+#z ufnością 95% przedział (4.57 : 4.83) pokrywa średnią długość trwania 
+#wszystkich takich połączeń
+
+ufnosc_wariancja(1200, 2.2, 0.05) #tu coś nie wychodzi
+
+
+#7
+
+#Zużycie wody w fabryce podlega losowym wahaniom w kolejnych dniach roku.
+#Na podstawie 365 obserwacji stwierdzono, że średnie dzienne zużycie wynosi 102 hl, 
+#a wariancja 81 hl2
+
+#a) Przyjmując współczynnik ufności 0,98 oceń przedziałowo średnie dzienne 
+#zużycie wody w fabryce.
+
+C = zsum.test(102, sqrt(81), 365, conf.level = 0.98)$conf.int
+print(paste("średnia: (", C[1], ":", C[2], ")"))
+#z ufnością 98% przedział ( 100.9 : 103.1 ) pokrywa średnie zużycie dzienne wody w fabryce
+
+#b) W następnym roku cena wody ma wzrosnąć. Produkcja będzie musiała być ograniczona, 
+#jeżeli średnie dzienne zużycie wyniesie co najmniej 122 hl. Czy na podstawie 
+#uzyskanego wyniku jest to prawdopodobna sytuacja?
+
+#nie, ponieważ z taką ufnością przedział nie pokrywa mu=122
+
+
+#8
+
+#Inżynier chce ustalić wielkość próbki niezbędną do uzyskania zadanej precyzji w 
+#szacowaniu średniego czasu wiązania nowej mieszanki cementowej. Z dotychczasowych 
+#doświadczeń wiadomo, że czas wiązania mieszanki cementowej jest zmienną losową o 
+#rozkładzie normalnym i wariancji 25 (h^2). Jaka powinna być liczebność próby, aby 
+#uzyskać 95% pewność, że błąd estymacji średniego czasu wiązania mieszanki nie przekroczy 1?
+
+#jeśli dobrze rozumiem to:
+#chcemy obliczyć z ee = qnorm(1-alpha/2)* sigma/sqrt(n)
+# ee^2 = qnorm()^2 * sigma^2 / n
+# n = to coś / ee^2
+
+n = qnorm(1-0.05/2)^2 * 25 / 1^2
+n
+#trzeba zaokrąglic do góry (im mniejszy mianownik tym wieksze n)
+#powinna być liczebność próby 97
+
+
+#9
+
+#Z wcześniejszych doświadczeń wiadomo, że waga łososia hodowanego w wylęgarni 
+#komercyjnej jest zmienną losową o rozkładzie normalnym, przy czym średnia waga zmienia 
+#się w zależności od sezonu, ale odchylenie standardowe pozostaje stałe na poziomie 0,3 
+#funta. Jeśli chcemy mieć 90% ufności, że oszacowana średnia waga łososia jest prawidłowa 
+#z dokładnością do ±0,1 funta, to jak dużą próbę należy pobrać? Jak zmieni się wynik,
+#jeśli chcemy mieć 99% ufności? 
+
+#to brzmi jak to co wyżej
+n = qnorm(1-0.1/2)^2 * 0.3^2 / 0.1^2
+n
+#zaokrąglenie tak jak poprzednio
+#powinna być liczebność 27
+
+#dla ufności 99%
+n = qnorm(1-0.01/2)^2 * 0.3^2 / 0.1^2
+n
+#potrzeba próby równej 60
+
+
+#10
+
+#Automat dozujący w browarze wymaga regulacji, gdy proporcja p niedopełnionych puszek 
+#wynosi 1,5% lub więcej. Ponieważ skontrolowanie zawartości puszki powoduje jej zniszczenie, 
+#nie ma możliwości wyznaczenia prawdziwej proporcji wszystkich niedopełnionych puszek. 
+#Dlatego co jakiś czas wybiera się próbę 100 puszek i sprawdza się ich zawartość.
+#W ostatnio pobranej próbie stwierdzono 4 niedopełnione puszki. Oceń z 95% ufnością 
+#rzeczywisty odsetek niedopełnionych puszek. Napisz własną funkcję wyznaczającą oceniającą 
+#proporcję niedopełnionych puszek, a następnie porównaj wynik z rezultatem funkcji 
+#binom.test i prop.test w R. Zinterpretuj wynik.
+
+phat = 4/100 #100 puszek i 4 niedopełnione, sukcesem jest niedopelnienie puszki
+alpha=0.05
+z=qnorm(1-alpha/2)
+n=100
+
+L=phat-z*sqrt(phat*(1-phat)/n)
+P=phat+z*sqrt(phat*(1-phat)/n)
+print(paste("(",L,":", P, ")" ))
+#wynik = ( 0.15% : 7.85% ) z ufnością 95% ten przedział pokrywa nieznaną proporcję 
+#niedopełnionych puszek w browarze
+  
+C = binom.test(4, 100, conf.level = 0.95)$conf.int
+print(paste("(", C[1], ":", C[2], ")"))
+# -||- ale przedział (1.1% : 9.93%)
+
+C = prop.test(4, 100, conf.level = 0.95)$conf.int
+print(paste("(", C[1], ":", C[2], ")"))
+# -||- ale przedział ( 1.28% : 10.52% )
+
+
+#11
+
+#Asystent inżyniera przemysłowego przeprowadził 120 przypadkowych obserwacji zespołu 
+#monterów tapicerek w zakładzie montażu samochodów. W 24 przypadkach zaobserwował, że 
+#pracownicy układali materiały poza swoim stanowiskiem pracy (co może stwarzać 
+#niebezpieczeństwo dla innych pracowników zakładu, a więc jest niezgodne z przepisami BHP). 
+#Oceń z ufnością 90% prawdziwy odsetek monterów nie przestrzegających wspomnianych 
+#przepisów BHP. Zinterpretuj wynik.
+
+phat = 24/120
+alpha=0.1
+z=qnorm(1-alpha/2)
+n=120
+
+L=phat-z*sqrt(phat*(1-phat)/n)
+P=phat+z*sqrt(phat*(1-phat)/n)
+print(paste("(",L,":", P, ")" ))
+#z ufnością 90% przedział ( 13.9% : 26.01%) pokrywa nieznaną proporcję monterów 
+#nieprzestrzegających wspomnianych przepisów BHP
+
+C = binom.test(24, 120, conf.level = 0.9)$conf.int
+print(paste("(", C[1], ":", C[2], ")"))
+# -||- ale przedział (14.1% : 27%)
+
+C = prop.test(24, 120, conf.level = 0.9)$conf.int
+print(paste("(", C[1], ":", C[2], ")"))
+# -||- ale przedział (14.3% : 27.1%)
+
+
+#12
+
+#Badacz zainteresowany jest oszacowaniem frakcji osób mających problemy ze wzrokiem 
+#w danej grupie wiekowej. Ile osób należy zbadać, aby na poziomie ufności 98% uzyskać 
+#błąd oszacowania ±0,05 jeżeli:
+ee = 0.05
+z=qnorm(1-0.02/2)
+#(a) z wcześniejszych doświadczeń wiadomo, że p wynosi 0,3
+
+#sposób z wykładu
+phat = 0.3
+n = z*z * phat * (1-phat) / (ee*ee)
+n
+
+#potrzeba zbadać 455 osób
+
+#(b) nic nie wiadomo o proporcji p.
+phat = 0.5
+n = z*z * phat * (1-phat) / (ee*ee)
+n
